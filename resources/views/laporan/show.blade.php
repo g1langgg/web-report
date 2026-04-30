@@ -113,32 +113,119 @@
 
                     @if($laporan->assignment)
                         <div class="border-t dark:border-gray-600 pt-6">
-                            <h4 class="font-semibold text-lg mb-4">Informasi Pengerjaan</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
-                                <div>
-                                    <h5 class="font-semibold text-gray-600 dark:text-gray-400">Teknisi</h5>
-                                    <p>{{ $laporan->assignment->teknisi->name }}</p>
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-bold text-lg text-gray-900 dark:text-white">Informasi Pengerjaan</h4>
+                                @if($laporan->status === 'progress')
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-medium text-blue-600 dark:text-blue-400 animate-pulse">Sedang dikerjakan</span>
+                                        <span class="flex h-2 w-2 relative">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                        </span>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-600">
+                                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Teknisi Penanggung Jawab</p>
+                                        <p class="font-bold text-gray-900 dark:text-white">{{ $laporan->assignment->teknisi->name }}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h5 class="font-semibold text-gray-600 dark:text-gray-400">Tanggal Assignment</h5>
-                                    <p>{{ $laporan->assignment->assigned_at?->format('d F Y H:i') ?? '-' }}</p>
+                                <div class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-slate-700/50 rounded-xl border border-gray-100 dark:border-slate-600">
+                                    <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">Waktu Penugasan</p>
+                                        <p class="font-bold text-gray-900 dark:text-white">{{ $laporan->assignment->assigned_at?->format('d M Y H:i') ?? '-' }}</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            @if($laporan->assignment->completed_at)
-                                <div class="mb-4">
-                                    <h5 class="font-semibold text-gray-600 dark:text-gray-400 mb-2">Catatan Penyelesaian</h5>
-                                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded">
-                                        <p class="whitespace-pre-wrap">{{ $laporan->assignment->completion_notes }}</p>
+                            <!-- Progress Timeline -->
+                            @if($laporan->progressUpdates->count() > 0)
+                                <div class="mb-8">
+                                    <h5 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-4 flex items-center gap-2">
+                                        <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                        </svg>
+                                        Catatan Perkembangan (Log)
+                                    </h5>
+                                    <div class="space-y-4 relative before:absolute before:left-[19px] before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-200 dark:before:bg-slate-700">
+                                        @foreach($laporan->progressUpdates as $update)
+                                            <div class="relative pl-10">
+                                                <div class="absolute left-3 top-1.5 w-3.5 h-3.5 rounded-full bg-blue-500 border-2 border-white dark:border-slate-800 z-10 shadow-sm shadow-blue-500/50"></div>
+                                                <div class="p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                                                    <div class="flex items-center justify-between mb-2">
+                                                        <span class="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">Progres</span>
+                                                        <span class="text-[10px] text-gray-500">{{ $update->created_at->format('d M, H:i') }}</span>
+                                                    </div>
+                                                    <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ $update->message }}</p>
+                                                    @if($update->photo_path)
+                                                        <div class="mt-3">
+                                                            <img src="{{ asset('storage/' . $update->photo_path) }}" alt="Progress Photo" 
+                                                                 class="w-32 h-24 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity border dark:border-slate-600"
+                                                                 onclick="openImageModal('{{ asset('storage/' . $update->photo_path) }}')">
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
+                            @endif
 
-                                @if($laporan->assignment->completion_photo)
-                                    <div>
-                                        <h5 class="font-semibold text-gray-600 dark:text-gray-400 mb-2">Foto Bukti</h5>
-                                        <img src="{{ asset('storage/' . $laporan->assignment->completion_photo) }}" alt="Bukti Penyelesaian" class="max-w-md rounded">
+                            <!-- Final Result Card -->
+                            @if($laporan->assignment->completed_at)
+                                <div class="p-6 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/10 dark:to-teal-900/10 rounded-2xl border-2 border-emerald-100 dark:border-emerald-900/30 shadow-inner">
+                                    <div class="flex items-center gap-2 mb-4">
+                                        <div class="p-1.5 bg-emerald-500 text-white rounded-lg shadow-sm">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <h5 class="font-bold text-gray-900 dark:text-white">Hasil Pekerjaan Selesai</h5>
                                     </div>
-                                @endif
+                                    
+                                    <div class="space-y-4">
+                                        <div class="bg-white/50 dark:bg-slate-800/50 p-4 rounded-xl border border-white dark:border-slate-700">
+                                            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-2 uppercase tracking-widest">Catatan Final Teknisi</p>
+                                            <p class="text-gray-800 dark:text-gray-200 text-sm whitespace-pre-wrap leading-relaxed">{{ $laporan->assignment->completion_notes }}</p>
+                                        </div>
+                                        
+                                        @if($laporan->assignment->completion_photo)
+                                            <div>
+                                                <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mb-2 uppercase tracking-widest">Foto Bukti Selesai</p>
+                                                <div class="relative group max-w-sm">
+                                                    <img src="{{ asset('storage/' . $laporan->assignment->completion_photo) }}" alt="Bukti Penyelesaian" 
+                                                         class="rounded-xl shadow-lg border-4 border-white dark:border-slate-800 cursor-pointer group-hover:scale-[1.02] transition-transform"
+                                                         onclick="openImageModal('{{ asset('storage/' . $laporan->assignment->completion_photo) }}')">
+                                                    <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl flex items-center justify-center">
+                                                        <span class="bg-white/90 dark:bg-slate-800/90 text-gray-900 dark:text-white px-3 py-1.5 rounded-full text-[10px] font-bold shadow-lg uppercase tracking-wider">Perbesar Foto</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                        
+                                        <div class="pt-2 flex items-center gap-4 text-[10px] text-gray-500 dark:text-gray-400 italic">
+                                            <span class="flex items-center gap-1">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                Verifikasi Selesai: {{ $laporan->assignment->completed_at->format('d M Y, H:i') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             @endif
                         </div>
                     @endif
@@ -493,13 +580,34 @@
                     </a>
                 </div>
 
+                @if(auth()->user()->hasRole('teknisi') && in_array($laporan->status, ['pending', 'reopened']))
+                    <form method="POST" action="{{ route('laporan.assign', $laporan) }}" class="inline">
+                        @csrf
+                        <input type="hidden" name="teknisi_id" value="{{ auth()->id() }}">
+                        <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg mt-2 sm:mt-0">
+                            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Ambil Laporan
+                        </button>
+                    </form>
+                @endif
+
                 @if(auth()->user()->hasRole('teknisi') && $laporan->status === 'progress' && $laporan->assignment?->teknisi_id === auth()->id())
-                    <button onclick="document.getElementById('complete-modal').classList.remove('hidden')" class="inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg mt-2 sm:mt-0">
-                        <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        Selesaikan Laporan
-                    </button>
+                    <div class="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0">
+                        <button onclick="document.getElementById('progress-modal').classList.remove('hidden')" class="inline-flex items-center justify-center px-6 py-2.5 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 font-semibold rounded-xl border border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 transition-all shadow-sm">
+                            <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Update Progres
+                        </button>
+                        <button onclick="document.getElementById('complete-modal').classList.remove('hidden')" class="inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg">
+                            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Selesaikan Laporan
+                        </button>
+                    </div>
                 @endif
             </div>
 
@@ -545,7 +653,41 @@
 
             <!-- Complete Modal -->
             @if(auth()->user()->hasRole('teknisi') && $laporan->status === 'progress')
-                <div id="complete-modal" class="fixed inset-0 bg-gray-900/80 hidden items-center justify-center z-50 p-4">
+                <!-- Progress Update Modal -->
+                <div id="progress-modal" class="fixed inset-0 bg-gray-900/80 hidden items-center justify-center z-[60] p-4">
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                                <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Update Progres</h3>
+                        </div>
+                        <form method="POST" action="{{ route('laporan.progress.update', $laporan) }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-4">
+                                <label for="message" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Apa perkembangan terbaru? <span class="text-red-500">*</span></label>
+                                <textarea id="message" name="message" rows="4" required class="w-full border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 dark:bg-slate-700 dark:text-white" placeholder="Contoh: Sedang menunggu sparepart dari gudang, atau sedang pengecekan kabel..."></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <label for="photo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Foto Pendukung (Opsional)</label>
+                                <input type="file" id="photo" name="photo" accept="image/*" class="w-full border-gray-300 dark:border-gray-600 rounded-xl">
+                                <p class="text-[10px] text-gray-500 mt-1">Format: JPEG, PNG, JPG (max 5MB)</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="submit" class="flex-1 bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl hover:bg-blue-700 transition-all shadow-lg">
+                                    Simpan Update
+                                </button>
+                                <button type="button" onclick="document.getElementById('progress-modal').classList.add('hidden')" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">
+                                    Batal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="complete-modal" class="fixed inset-0 bg-gray-900/80 hidden items-center justify-center z-[60] p-4">
                     <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl max-w-lg w-full shadow-2xl">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
@@ -559,22 +701,22 @@
                             @csrf
                             <div class="mb-4">
                                 <label for="completion_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Catatan Penyelesaian <span class="text-red-500">*</span> (min. 5 karakter)</label>
-                                <textarea id="completion_notes" name="completion_notes" rows="4" required class="w-full border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 dark:bg-slate-700 dark:text-white @error('completion_notes') border-red-500 @enderror" placeholder="Jelaskan apa yang telah dikerjakan...">{{ old('completion_notes') }}</textarea>
+                                <textarea id="completion_notes" name="completion_notes" rows="4" required class="w-full border-gray-300 dark:border-gray-600 rounded-xl shadow-sm focus:border-emerald-500 focus:ring focus:ring-emerald-200 dark:bg-slate-700 dark:text-white @error('completion_notes') border-red-500 @enderror" placeholder="Jelaskan secara detail apa yang telah diperbaiki/diselesaikan...">{{ old('completion_notes') }}</textarea>
                                 @error('completion_notes')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
                             <div class="mb-4">
-                                <label for="completion_photo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Foto Bukti <span class="text-red-500">*</span></label>
+                                <label for="completion_photo" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Foto Bukti Selesai <span class="text-red-500">*</span></label>
                                 <input type="file" id="completion_photo" name="completion_photo" accept="image/*" required class="w-full border-gray-300 dark:border-gray-600 rounded-xl @error('completion_photo') border-red-500 @enderror">
                                 @error('completion_photo')
                                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                                 @enderror
-                                <p class="text-xs text-gray-500 mt-1">Format: JPEG, PNG, JPG (max 5MB)</p>
+                                <p class="text-[10px] text-gray-500 mt-1">Lampirkan foto hasil akhir pekerjaan (max 5MB)</p>
                             </div>
                             <div class="flex gap-3">
                                 <button type="submit" class="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-semibold px-6 py-3 rounded-xl hover:from-emerald-600 hover:to-teal-600 transition-all shadow-lg">
-                                    Submit
+                                    Kirim & Selesaikan
                                 </button>
                                 <button type="button" onclick="document.getElementById('complete-modal').classList.add('hidden')" class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all">
                                     Batal

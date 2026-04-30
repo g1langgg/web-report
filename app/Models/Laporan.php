@@ -81,6 +81,11 @@ class Laporan extends Model
         return $this->hasMany(LaporanComment::class)->orderBy('created_at', 'asc');
     }
 
+    public function progressUpdates(): HasMany
+    {
+        return $this->hasMany(LaporanProgress::class)->orderBy('created_at', 'desc');
+    }
+
     public function getStatusBadgeAttribute(): string
     {
         if ($this->is_overdue && $this->status !== 'done') {

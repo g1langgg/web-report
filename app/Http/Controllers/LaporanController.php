@@ -7,7 +7,9 @@ use App\Models\Department;
 use App\Models\Laporan;
 use App\Models\LaporanAttachment;
 use App\Models\LaporanHistory;
+use App\Models\LaporanProgress;
 use App\Models\Notification;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -174,7 +176,7 @@ class LaporanController extends Controller
 
     public function show(Laporan $laporan)
     {
-        $laporan->load(['department', 'pelapor', 'assignment.teknisi']);
+        $laporan->load(['department', 'pelapor', 'assignment.teknisi', 'progressUpdates.user']);
         return view('laporan.show', compact('laporan'));
     }
 
@@ -297,9 +299,42 @@ class LaporanController extends Controller
             ->with('success', 'Laporan berhasil diselesaikan');
     }
 
+    public function updateProgress(Request $request, Laporan $laporan)
+    {
+        $request->validate([
+            'message' => 'required|string|min:5',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+        ]);
+
+        if ($laporan->status !== 'progress') {
+            return back()->with('error', 'Status laporan tidak valid');
+        }
+
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('progress-photos', 'public');
+        }
+
+        $laporan->progressUpdates()->create([
+            'user_id' => Auth::id(),
+            'message' => $request->message,
+            'photo_path' => $photoPath,
+        ]);
+
+        // Create history record
+        LaporanHistory::create([
+            'laporan_id' => $laporan->id,
+            'user_id' => Auth::id(),
+            'action' => 'progress_updated',
+            'description' => 'Update progres: ' . Str::limit($request->message, 50),
+        ]);
+
+        return back()->with('success', 'Progres berhasil diperbarui');
+    }
+
     public function edit(Laporan $laporan)
     {
-        if ($laporan->pelapor_id !== Auth::id() || $laporan->status !== 'pending') {
+        if (($laporan->pelapor_id !== Auth::id() && !Auth::user()->hasAnyRole(['admin', 'manager'])) || $laporan->status !== 'pending') {
             return back()->with('error', 'Tidak dapat edit laporan ini');
         }
 
@@ -309,7 +344,7 @@ class LaporanController extends Controller
 
     public function update(Request $request, Laporan $laporan)
     {
-        if ($laporan->pelapor_id !== Auth::id() || $laporan->status !== 'pending') {
+        if (($laporan->pelapor_id !== Auth::id() && !Auth::user()->hasAnyRole(['admin', 'manager'])) || $laporan->status !== 'pending') {
             return back()->with('error', 'Tidak dapat update laporan ini');
         }
 
@@ -337,7 +372,7 @@ class LaporanController extends Controller
 
     public function destroy(Laporan $laporan)
     {
-        if ($laporan->pelapor_id !== Auth::id() || $laporan->status !== 'pending') {
+        if (($laporan->pelapor_id !== Auth::id() && !Auth::user()->hasAnyRole(['admin', 'manager'])) || $laporan->status !== 'pending') {
             return back()->with('error', 'Tidak dapat hapus laporan ini');
         }
 
@@ -474,7 +509,7 @@ class LaporanController extends Controller
                 'user_id' => $laporan->assignment->teknisi_id,
                 'laporan_id' => $laporan->id,
                 'title' => 'Laporan Perlu Revisi',
-                'message' => "Laporan #{$laporan->ticket_number} diajukan revisi. Alasan: " . str_limit($validated['alasan'], 50),
+                'message' => "Laporan #{$laporan->ticket_number} diajukan revisi. Alasan: " . Str::limit($validated['alasan'], 50),
                 'type' => 'reopened',
             ]);
         } else {

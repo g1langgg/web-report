@@ -262,45 +262,85 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const chartFont = { family: 'Inter, sans-serif' };
-        const chartGrid = { color: 'rgba(255,255,255,0.04)', drawBorder: false };
-        const chartTicks = { color: 'rgba(238,241,240,0.3)', font: { family: 'Inter, sans-serif', size: 11 } };
-        const teal = '#2EC4B6';
-        const tealSoft = 'rgba(46,196,182,0.15)';
-        const tealMuted = 'rgba(46,196,182,0.5)';
-        const dimWhite = 'rgba(238,241,240,0.25)';
+        (function() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const chartFont = { family: 'Inter, sans-serif' };
+            const gridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
+            const chartGrid = { color: gridColor, drawBorder: false };
+            const tickColor = isDark ? 'rgba(238,241,240,0.3)' : '#64748b';
+            const chartTicks = { color: tickColor, font: { family: 'Inter, sans-serif', size: 11 } };
+            const legendColor = isDark ? 'rgba(238,241,240,0.4)' : '#475569';
+            
+            const teal = '#2EC4B6';
+            const tealSoft = isDark ? 'rgba(46,196,182,0.15)' : 'rgba(46,196,182,0.1)';
+            const dimLine = isDark ? 'rgba(238,241,240,0.25)' : '#94a3b8';
+            const dimFill = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
 
-        new Chart(document.getElementById('dailyChart'), {
-            type: 'line',
-            data: {
-                labels: {!! json_encode($chartData['labels']) !!},
-                datasets: [
-                    { label:'Dibuat', data:{!! json_encode($chartData['created']) !!}, borderColor:teal, backgroundColor:tealSoft, pointRadius:3, pointBackgroundColor:teal, borderWidth:2, tension:0.35, fill:true },
-                    { label:'Selesai', data:{!! json_encode($chartData['completed']) !!}, borderColor:dimWhite, backgroundColor:'rgba(255,255,255,0.03)', pointRadius:3, pointBackgroundColor:dimWhite, borderWidth:2, tension:0.35, fill:true }
-                ]
-            },
-            options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'circle', font:chartFont, color:'rgba(238,241,240,0.4)' } } }, scales:{ x:{ grid:{display:false}, ticks:chartTicks }, y:{ beginAtZero:true, grid:chartGrid, ticks:{...chartTicks, stepSize:1} } } }
-        });
+            new Chart(document.getElementById('dailyChart'), {
+                type: 'line',
+                data: {
+                    labels: {!! json_encode($chartData['labels']) !!},
+                    datasets: [
+                        { label:'Dibuat', data:{!! json_encode($chartData['created']) !!}, borderColor:teal, backgroundColor:tealSoft, pointRadius:3, pointBackgroundColor:teal, borderWidth:2, tension:0.35, fill:true },
+                        { label:'Selesai', data:{!! json_encode($chartData['completed']) !!}, borderColor:dimLine, backgroundColor:dimFill, pointRadius:3, pointBackgroundColor:dimLine, borderWidth:2, tension:0.35, fill:true }
+                    ]
+                },
+                options: { 
+                    responsive:true, 
+                    plugins:{ 
+                        legend:{ 
+                            position:'bottom', 
+                            labels:{ boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'circle', font:chartFont, color:legendColor } 
+                        } 
+                    }, 
+                    scales:{ x:{ grid:{display:false}, ticks:chartTicks }, y:{ beginAtZero:true, grid:chartGrid, ticks:{...chartTicks, stepSize:1} } } 
+                }
+            });
 
-        new Chart(document.getElementById('monthlyChart'), {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($monthlyData['labels']) !!},
-                datasets: [
-                    { label:'Dibuat', data:{!! json_encode($monthlyData['created']) !!}, backgroundColor:teal, borderRadius:8 },
-                    { label:'Selesai', data:{!! json_encode($monthlyData['completed']) !!}, backgroundColor:'rgba(46,196,182,0.25)', borderRadius:8 }
-                ]
-            },
-            options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, boxHeight:10, font:chartFont, color:'rgba(238,241,240,0.4)' } } }, scales:{ x:{ grid:{display:false}, ticks:chartTicks }, y:{ beginAtZero:true, grid:chartGrid, ticks:{...chartTicks, stepSize:1} } } }
-        });
+            new Chart(document.getElementById('monthlyChart'), {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($monthlyData['labels']) !!},
+                    datasets: [
+                        { label:'Dibuat', data:{!! json_encode($monthlyData['created']) !!}, backgroundColor:teal, borderRadius:8 },
+                        { label:'Selesai', data:{!! json_encode($monthlyData['completed']) !!}, backgroundColor:isDark ? 'rgba(46,196,182,0.25)' : 'rgba(46,196,182,0.15)', borderRadius:8 }
+                    ]
+                },
+                options: { 
+                    responsive:true, 
+                    plugins:{ 
+                        legend:{ 
+                            position:'bottom', 
+                            labels:{ boxWidth:10, boxHeight:10, font:chartFont, color:legendColor } 
+                        } 
+                    }, 
+                    scales:{ x:{ grid:{display:false}, ticks:chartTicks }, y:{ beginAtZero:true, grid:chartGrid, ticks:{...chartTicks, stepSize:1} } } 
+                }
+            });
 
-        new Chart(document.getElementById('priorityChart'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Low','Medium','High','Urgent'],
-                datasets: [{ data:{!! json_encode(array_values($priorityStats)) !!}, backgroundColor:['rgba(46,196,182,0.2)','rgba(46,196,182,0.4)','rgba(46,196,182,0.65)',teal], borderWidth:0 }]
-            },
-            options: { responsive:true, cutout:'65%', plugins:{ legend:{ position:'bottom', labels:{ boxWidth:10, boxHeight:10, font:chartFont, color:'rgba(238,241,240,0.4)' } } } }
-        });
+            new Chart(document.getElementById('priorityChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low','Medium','High','Urgent'],
+                    datasets: [{ 
+                        data:{!! json_encode(array_values($priorityStats)) !!}, 
+                        backgroundColor: isDark 
+                            ? ['rgba(46,196,182,0.2)','rgba(46,196,182,0.4)','rgba(46,196,182,0.65)',teal]
+                            : ['rgba(46,196,182,0.15)','rgba(46,196,182,0.3)','rgba(46,196,182,0.5)',teal], 
+                        borderWidth:0 
+                    }]
+                },
+                options: { 
+                    responsive:true, 
+                    cutout:'65%', 
+                    plugins:{ 
+                        legend:{ 
+                            position:'bottom', 
+                            labels:{ boxWidth:10, boxHeight:10, font:chartFont, color:legendColor } 
+                        } 
+                    } 
+                }
+            });
+        })();
     </script>
 </x-app-layout>

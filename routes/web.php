@@ -23,7 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::middleware('role:pelapor')->group(function () {
+    Route::middleware('role:pelapor|admin|manager')->group(function () {
         Route::get('/laporan/create', [LaporanController::class, 'create'])->name('laporan.create');
         Route::post('/laporan', [LaporanController::class, 'store'])->name('laporan.store');
         Route::get('/laporan/{laporan}/edit', [LaporanController::class, 'edit'])->name('laporan.edit');
@@ -31,8 +31,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/laporan/{laporan}', [LaporanController::class, 'destroy'])->name('laporan.destroy');
     });
 
-    Route::middleware('role:teknisi')->group(function () {
+    Route::middleware('role:teknisi|admin|manager')->group(function () {
         Route::post('/laporan/{laporan}/assign', [LaporanController::class, 'assign'])->name('laporan.assign');
+        Route::post('/laporan/{laporan}/progress', [LaporanController::class, 'updateProgress'])->name('laporan.progress.update');
         Route::post('/laporan/{laporan}/complete', [LaporanController::class, 'complete'])->name('laporan.complete');
     });
 

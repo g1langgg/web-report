@@ -193,24 +193,69 @@
     @if(isset($chartData) && count($chartData['labels']) > 0)
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            new Chart(document.getElementById('pelaporChart'), {
-                type: 'line',
-                data: {
-                    labels: {!! json_encode($chartData['labels']) !!},
-                    datasets: [
-                        { label:'Dibuat', data:{!! json_encode($chartData['created']) !!}, borderColor:'#2EC4B6', backgroundColor:'rgba(46,196,182,0.12)', pointBackgroundColor:'#2EC4B6', borderWidth:2, pointRadius:3, tension:0.35, fill:true },
-                        { label:'Selesai', data:{!! json_encode($chartData['completed']) !!}, borderColor:'rgba(238,241,240,0.25)', backgroundColor:'rgba(255,255,255,0.03)', pointBackgroundColor:'rgba(238,241,240,0.25)', borderWidth:2, pointRadius:3, tension:0.35, fill:true }
-                    ]
-                },
-                options: {
-                    responsive:true,
-                    plugins:{ legend:{ position:'bottom', labels:{ color:'rgba(238,241,240,0.4)', font:{ family:'Inter, sans-serif' } } } },
-                    scales:{
-                        x:{ grid:{display:false}, ticks:{ color:'rgba(238,241,240,0.3)', font:{ family:'Inter, sans-serif', size:11 } } },
-                        y:{ beginAtZero:true, grid:{ color:'rgba(255,255,255,0.04)', drawBorder:false }, ticks:{ stepSize:1, color:'rgba(238,241,240,0.3)', font:{ family:'Inter, sans-serif', size:11 } } }
+            (function() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const accentColor = '#2EC4B6';
+                const gridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)';
+                const tickColor = isDark ? 'rgba(238,241,240,0.3)' : '#64748b';
+                const legendColor = isDark ? 'rgba(238,241,240,0.4)' : '#475569';
+                const secondaryLine = isDark ? 'rgba(238,241,240,0.25)' : '#94a3b8';
+                const secondaryFill = isDark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)';
+
+                new Chart(document.getElementById('pelaporChart'), {
+                    type: 'line',
+                    data: {
+                        labels: {!! json_encode($chartData['labels']) !!},
+                        datasets: [
+                            { 
+                                label:'Dibuat', 
+                                data:{!! json_encode($chartData['created']) !!}, 
+                                borderColor: accentColor, 
+                                backgroundColor: isDark ? 'rgba(46,196,182,0.12)' : 'rgba(46,196,182,0.1)', 
+                                pointBackgroundColor: accentColor, 
+                                borderWidth: 2, 
+                                pointRadius: 3, 
+                                tension: 0.35, 
+                                fill: true 
+                            },
+                            { 
+                                label:'Selesai', 
+                                data:{!! json_encode($chartData['completed']) !!}, 
+                                borderColor: secondaryLine, 
+                                backgroundColor: secondaryFill, 
+                                pointBackgroundColor: secondaryLine, 
+                                borderWidth: 2, 
+                                pointRadius: 3, 
+                                tension: 0.35, 
+                                fill: true 
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { 
+                            legend: { 
+                                position: 'bottom', 
+                                labels: { 
+                                    color: legendColor, 
+                                    font: { family: 'Inter, sans-serif' } 
+                                } 
+                            } 
+                        },
+                        scales: {
+                            x: { 
+                                grid: { display: false }, 
+                                ticks: { color: tickColor, font: { family: 'Inter, sans-serif', size: 11 } } 
+                            },
+                            y: { 
+                                beginAtZero: true, 
+                                grid: { color: gridColor, drawBorder: false }, 
+                                ticks: { stepSize: 1, color: tickColor, font: { family: 'Inter, sans-serif', size: 11 } } 
+                            }
+                        }
                     }
-                }
-            });
+                });
+            })();
         </script>
     @endif
 </x-app-layout>

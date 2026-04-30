@@ -204,12 +204,24 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4">
-                                        <a href="{{ route('laporan.show', $laporan) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 font-medium text-sm">
-                                            Detail
-                                            <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </a>
+                                        <div class="flex items-center gap-2">
+                                            <a href="{{ route('laporan.show', $laporan) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 font-medium text-sm">
+                                                Detail
+                                                <svg class="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </a>
+                                            
+                                            @if(auth()->user()->hasRole('teknisi') && in_array($laporan->status, ['pending', 'reopened']))
+                                                <form action="{{ route('laporan.assign', $laporan) }}" method="POST" class="inline">
+                                                    @csrf
+                                                    <input type="hidden" name="teknisi_id" value="{{ auth()->id() }}">
+                                                    <button type="submit" class="text-xs font-bold text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 ml-2">
+                                                        Ambil
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty

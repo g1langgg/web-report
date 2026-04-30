@@ -33,6 +33,14 @@
     --bg-gradient-1: radial-gradient(ellipse at 20% 0%, rgba(46,196,182,0.04) 0%, transparent 50%);
     --bg-gradient-2: radial-gradient(ellipse at 80% 10%, rgba(46,196,182,0.025) 0%, transparent 40%);
     --bg-gradient-3: radial-gradient(ellipse at 50% 100%, rgba(46,196,182,0.02) 0%, transparent 50%);
+    
+    --hero-bg: radial-gradient(ellipse at 15% 0%, rgba(46,196,182,0.10), transparent 50%),
+                radial-gradient(ellipse at 85% 100%, rgba(46,196,182,0.05), transparent 40%),
+                linear-gradient(145deg, #0d0d12 0%, #090910 40%, #050508 100%);
+    --hero-bg-soft: radial-gradient(ellipse at 20% 0%, rgba(46,196,182,0.07), transparent 50%),
+                linear-gradient(145deg, #0f0f15 0%, #0a0a0f 50%, #050508 100%);
+    --hero-shadow: 0 0 60px rgba(46,196,182,0.04), 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+    --hero-shadow-soft: 0 0 40px rgba(46,196,182,0.03), inset 0 1px 0 rgba(255,255,255,0.03);
 
     --radius-sm: 12px;
     --radius-md: 18px;
@@ -72,6 +80,14 @@
     --bg-gradient-1: radial-gradient(ellipse at 20% 0%, rgba(13,148,136,0.06) 0%, transparent 50%);
     --bg-gradient-2: radial-gradient(ellipse at 80% 10%, rgba(13,148,136,0.04) 0%, transparent 40%);
     --bg-gradient-3: radial-gradient(ellipse at 50% 100%, rgba(13,148,136,0.03) 0%, transparent 50%);
+
+    --hero-bg: radial-gradient(ellipse at 15% 0%, rgba(13,148,136,0.08), transparent 50%),
+                radial-gradient(ellipse at 85% 100%, rgba(13,148,136,0.04), transparent 40%),
+                linear-gradient(145deg, #ffffff 0%, #f1f5f9 100%);
+    --hero-bg-soft: radial-gradient(ellipse at 20% 0%, rgba(13,148,136,0.06), transparent 50%),
+                linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    --hero-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 10px 40px rgba(0,0,0,0.03);
+    --hero-shadow-soft: 0 1px 2px rgba(0,0,0,0.03), 0 8px 30px rgba(0,0,0,0.02);
 }
 
 html { scroll-behavior: smooth; }
@@ -159,11 +175,8 @@ body { font-family: 'Inter', sans-serif; }
         @apply relative overflow-hidden px-6 py-6 sm:px-8 sm:py-8;
         border-radius: var(--radius-xl);
         border:1px solid var(--accent-border);
-        background:
-            radial-gradient(ellipse at 15% 0%, rgba(46,196,182,0.10), transparent 50%),
-            radial-gradient(ellipse at 85% 100%, rgba(46,196,182,0.05), transparent 40%),
-            linear-gradient(145deg, #0d0d12 0%, #090910 40%, #050508 100%);
-        box-shadow: 0 0 60px rgba(46,196,182,0.04), 0 1px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+        background: var(--hero-bg);
+        box-shadow: var(--hero-shadow);
     }
     .dashboard-hero::before {
         content:''; position:absolute; inset:0;
@@ -179,10 +192,8 @@ body { font-family: 'Inter', sans-serif; }
         @apply relative overflow-hidden px-6 py-6 sm:px-8 sm:py-8;
         border-radius: var(--radius-xl);
         border:1px solid var(--accent-border);
-        background:
-            radial-gradient(ellipse at 20% 0%, rgba(46,196,182,0.07), transparent 50%),
-            linear-gradient(145deg, #0f0f15 0%, #0a0a0f 50%, #050508 100%);
-        box-shadow: 0 0 40px rgba(46,196,182,0.03), inset 0 1px 0 rgba(255,255,255,0.03);
+        background: var(--hero-bg-soft);
+        box-shadow: var(--hero-shadow-soft);
     }
 
     .dashboard-hero-content { @apply relative z-10; }
